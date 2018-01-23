@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Екатерина Логвинова](https://up.htmlacademy.ru/javascript/12/user/232426).
-* Наставник: `Неизвестно`.
+* Наставник: [Дмитрий Харин](https://htmlacademy.ru/profile/dihar).
 
 ---
 

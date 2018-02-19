@@ -39,11 +39,6 @@ var getRandom = function (max, min) {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-var locAddress = {
-  x: getRandom(LOCATION_X_MIN, LOCATION_X_MAX),
-  y: getRandom(LOCATION_Y_MIN, LOCATION_Y_MAX)
-};
-
 // случайный индекс
 var getRandomArrIndex = function (arr) {
   return Math.floor(Math.random() * arr.length);
@@ -56,10 +51,11 @@ var getRandomElemArr = function (arr) {
 
 // перемешанный массив случайным образом
 var getRandomArr = function (randomArr) {
-  randomArr.sort(function () {
+  var newArr = randomArr.slice();
+  newArr.sort(function () {
     return 0.5 - Math.random();
   });
-  return randomArr;
+  return newArr;
 };
 
 // Создаем объявление
@@ -74,12 +70,12 @@ var getOffer = function () {
       },
 
       'offer': {
-        'title': getRandomElemArr(TITLES),
-        'address': 'locAddress.x' + 'locAddress.y',
+        'title': getRandomArr(TITLES[i]),
+        'address': locationX + ', ' + locationY,
         'price': getRandom(PRICE_MIN, PRICE_MAX),
         'type': getRandomElemArr(TYPES),
         'rooms': getRandom(ROOMS_MIN, ROOMS_MAX),
-        'guests': getRandom(1, 10),
+        'guests': getRandom(10, 1),
         'checkin': getRandomElemArr(CHECKIN),
         'checkout': getRandomElemArr(CHECKOUT),
         'features': getRandomArr(FEATURES),
@@ -145,16 +141,16 @@ var getFeatures = function (features) {
 // Создаем объявление
 var renderOffer = function (data) {
   var template = document.querySelector('template').content.querySelector('article.map__card');
-  var CardElem = template.cloneNode(true);
-  CardElem.querySelector('.popup__avatar').src = data.author.avatar;
-  CardElem.querySelector('h3').textContent = data.offer.title;
-  CardElem.querySelector('.popup__price').textContent = data.offer.price + '&#x20bd;/ночь';
-  CardElem.querySelector('h4').textContent = apartmentType[data.offer.type];
-  CardElem.querySelector('h4').nextElementSibling.nextElementSibling.textContent = 'Заезд после ' + data.offer.checkin + ',' + ' выезд до ' + data.offer.checkout;
-  CardElem.querySelector('.popup__features').textContent = '';
-  CardElem.querySelector('.popup__features').appendChild(getFeatures(data.offer.features));
-  CardElem.querySelector('.popup__features + p').textContent = data.offer.description;
-  return CardElem;
+  var cardElem = template.cloneNode(true);
+  cardElem.querySelector('.popup__avatar').src = data.author.avatar;
+  cardElem.querySelector('h3').textContent = data.offer.title;
+  cardElem.querySelector('.popup__price').textContent = data.offer.price + '&#x20bd;/ночь';
+  cardElem.querySelector('h4').textContent = apartmentType[data.offer.type];
+  cardElem.querySelector('h4').nextElementSibling.nextElementSibling.textContent = 'Заезд после ' + data.offer.checkin + ',' + ' выезд до ' + data.offer.checkout;
+  cardElem.querySelector('.popup__features').textContent = '';
+  cardElem.querySelector('.popup__features').appendChild(getFeatures(data.offer.features));
+  cardElem.querySelector('.popup__features + p').textContent = data.offer.description;
+  return cardElem;
 };
 
 var mapElem = document.querySelector('.map__pins');
@@ -162,5 +158,3 @@ var OfferAd = getOffer(AMOUNT);
 renderMap(mapElem, OfferAd);
 var offer = renderOffer(OfferAd);
 map.appendChild(offer);
-
-

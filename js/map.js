@@ -142,13 +142,6 @@ var getFeatures = function (features) {
   return fragment;
 };
 
-// отрисовать фичи
-var renderFeatures = function (feature) {
-  var features = getFeatures(feature);
-  feature.appendChild(features);
-};
-
-
 // Создаем объявление
 var renderOffer = function (data) {
   var template = document.querySelector('template').content.querySelector('article.map__card');
@@ -156,9 +149,10 @@ var renderOffer = function (data) {
   CardElem.querySelector('.popup__avatar').src = data.author.avatar;
   CardElem.querySelector('h3').textContent = data.offer.title;
   CardElem.querySelector('.popup__price').textContent = data.offer.price + '&#x20bd;/ночь';
-  CardElem.querySelector('h4').textContent = apartmentType[offer.type];
+  CardElem.querySelector('h4').textContent = apartmentType[data.offer.type];
   CardElem.querySelector('h4').nextElementSibling.nextElementSibling.textContent = 'Заезд после ' + data.offer.checkin + ',' + ' выезд до ' + data.offer.checkout;
-  CardElem.querySelector('.popup__features').textContent = renderFeatures(offer.features);
+  CardElem.querySelector('.popup__features').textContent = '';
+  CardElem.querySelector('.popup__features').appendChild(getFeatures(data.offer.features));
   CardElem.querySelector('.popup__features + p').textContent = data.offer.description;
   return CardElem;
 };

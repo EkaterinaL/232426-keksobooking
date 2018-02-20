@@ -61,6 +61,7 @@ var getRandomArr = function (randomArr) {
 // Создаем объявление
 var getOffer = function () {
   var array = [];
+  var title = getRandomArr(TITLES);
   for (var i = 1; i <= AMOUNT; i++) {
     var locationX = getRandom(LOCATION_X_MIN, LOCATION_X_MAX);
     var locationY = getRandom(LOCATION_Y_MIN, LOCATION_Y_MAX);
@@ -70,7 +71,7 @@ var getOffer = function () {
       },
 
       'offer': {
-        'title': getRandomArr(TITLES[i]),
+        'title': title[i],
         'address': locationX + ', ' + locationY,
         'price': getRandom(PRICE_MIN, PRICE_MAX),
         'type': getRandomElemArr(TYPES),

@@ -96,7 +96,14 @@ var getOffer = function () {
 
 // Активируем карту
 var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+// map.classList.remove('map--faded');
+
+var removePopupCard = function () {
+  var adCardElem = document.querySelector('.map__card');
+  if (adCardElem) {
+    adCardElem.remove();
+  }
+};
 
 // Создаем элемент пина
 var createPin = function (data) {
@@ -111,6 +118,11 @@ var createPin = function (data) {
   imgButton.style.height = '40' + 'px';
   imgButton.src = data.author.avatar;
   button.appendChild(imgButton);
+
+  button.addEventListener('click', function () {
+    removePopupCard();
+    renderOffer(data);
+  });
   return button;
 };
 
@@ -151,11 +163,50 @@ var renderOffer = function (data) {
   cardElem.querySelector('.popup__features').textContent = '';
   cardElem.querySelector('.popup__features').appendChild(getFeatures(data.offer.features));
   cardElem.querySelector('.popup__features + p').textContent = data.offer.description;
+
   return cardElem;
 };
 
 var mapElem = document.querySelector('.map__pins');
 var OfferAd = getOffer(AMOUNT);
-renderMap(mapElem, OfferAd);
-var offer = renderOffer(OfferAd);
-map.appendChild(offer);
+// renderMap(mapElem, OfferAd);
+// var offer = renderOffer(OfferAd);
+// map.appendChild(offer);
+
+var noticeForm = document.querySelector('.notice__form');
+var noticeFormFieldset = noticeForm.querySelectorAll('fieldset');
+var mapPinMain = document.querySelector('.map__pin--main');
+// var address = document.querySelector('#address');
+// var closeElem = document.querySelector('.popup__close');
+// // var MAIN_PIN_WIDTH = 65;
+// var MAIN_PIN_HEIGHT = 65;
+// var MAIN_PIN_PEAK_HEIGHT = 22;
+// var ESC = 27;
+
+
+var getMapActive = function () {
+  noticeForm.classList.remove('notice__form--disabled');
+  map.classList.remove('map--faded');
+  for (var i = 0; i < noticeFormFieldset.length; i++) {
+    noticeFormFieldset[i].disabled = false;
+  }
+};
+
+mapPinMain.addEventListener('mouseup', getMapActive);
+
+var getMapBlocked = function () {
+  noticeForm.classList.add('notice__form--disabled');
+  map.classList.add('map--faded');
+  for (var i = 0; i < noticeFormFieldset.length; i++) {
+    noticeFormFieldset[i].disabled = true;
+  }
+};
+
+var addMapPins = function () {
+  renderMap(mapElem, OfferAd);
+  mapPinMain.removeEventListener('mouseup', addMapPins);
+};
+
+getMapBlocked();
+
+mapPinMain.addEventListener('mouseup', addMapPins);

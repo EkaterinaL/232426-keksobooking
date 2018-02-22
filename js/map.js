@@ -66,6 +66,7 @@ var getOffer = function () {
     var locationX = getRandom(LOCATION_X_MIN, LOCATION_X_MAX);
     var locationY = getRandom(LOCATION_Y_MIN, LOCATION_Y_MAX);
     var advert = {
+      'id': i,
       'author': {
         'avatar': 'img/avatars/user0' + i + '.png'
       },
@@ -94,15 +95,39 @@ var getOffer = function () {
   return array;
 };
 
-// Активируем карту
 var map = document.querySelector('.map');
-// map.classList.remove('map--faded');
 
-var removePopupCard = function () {
-  var adCardElem = document.querySelector('.map__card');
-  if (adCardElem) {
-    adCardElem.remove();
+// Убираем поп-ап
+var removePopup = function () {
+  var popupCard = document.querySelector('.map__card');
+  if (popupCard) {
+    popupCard.remove();
   }
+};
+
+// Здесь намудрила
+// Как будет в этом случае сопоставить айдишник c объявлением?
+// И в else возвращать null?
+
+// Ищем айдишник Пина
+var findById = function (id) {
+  for (var i = 0; i < OfferAd.length; i++) {
+    if (OfferAd[i].id === button.data.id) {
+      return OfferAd[i];
+    }
+  }
+};
+
+// Добавляем  попап на карту
+var addPopupToMap = function (advert) {
+  map.appendChild(advert);
+};
+
+// Создаем поп-ап
+var createPopup = function () {
+  var infoPin = findById(button.dataset.id);
+  var popupOffer = renderOffer(infoPin);
+  addPopupToMap(popupOffer);
 };
 
 // Создаем элемент пина
@@ -112,6 +137,7 @@ var createPin = function (data) {
   button.style.left = data.location.x + 'px';
   button.style.top = data.location.y + 'px';
   button.draggable = false;
+  button.dataset.id = data.id;
   var imgButton = document.createElement('img');
   imgButton.src = '';
   imgButton.style.width = '40' + 'px';
@@ -120,8 +146,11 @@ var createPin = function (data) {
   button.appendChild(imgButton);
 
   button.addEventListener('click', function () {
-    removePopupCard();
-    renderOffer(data);
+    removePopup();
+    createPopup();
+    map.querySelector('.popup__close').addEventListener('click', function () {
+      removePopup();
+    });
   });
   return button;
 };
@@ -176,11 +205,7 @@ var OfferAd = getOffer(AMOUNT);
 var noticeForm = document.querySelector('.notice__form');
 var noticeFormFieldset = noticeForm.querySelectorAll('fieldset');
 var mapPinMain = document.querySelector('.map__pin--main');
-// var address = document.querySelector('#address');
-// var closeElem = document.querySelector('.popup__close');
-// // var MAIN_PIN_WIDTH = 65;
-// var MAIN_PIN_HEIGHT = 65;
-// var MAIN_PIN_PEAK_HEIGHT = 22;
+var address = document.querySelector('#address');
 // var ESC = 27;
 
 
@@ -192,8 +217,6 @@ var getMapActive = function () {
   }
 };
 
-mapPinMain.addEventListener('mouseup', getMapActive);
-
 var getMapBlocked = function () {
   noticeForm.classList.add('notice__form--disabled');
   map.classList.add('map--faded');
@@ -202,11 +225,17 @@ var getMapBlocked = function () {
   }
 };
 
-var addMapPins = function () {
+var getAddress = function (event) {
+  var mainPinCoordinates = event.clientX + ', ' + event.clientY;
+  address.setAttribute('value', mainPinCoordinates);
+};
+
+var onAddMapPins = function (event) {
+  getMapActive();
+  getAddress(event);
   renderMap(mapElem, OfferAd);
-  mapPinMain.removeEventListener('mouseup', addMapPins);
+  mapPinMain.removeEventListener('mouseup', onAddMapPins);
 };
 
 getMapBlocked();
-
-mapPinMain.addEventListener('mouseup', addMapPins);
+mapPinMain.addEventListener('mouseup', onAddMapPins);

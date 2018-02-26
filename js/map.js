@@ -95,26 +95,21 @@ var getOffer = function () {
   return array;
 };
 
-var map = document.querySelector('.map');
+// Ищем айдишник Пина
+var findById = function () {
+  for (var i = 0; i < offerAd.length; i++) {
+    if (offerAd[i].id === button.dataset.id) {
+      return offerAd[i];
+    }
+  }
+  return null;
+};
 
 // Убираем поп-ап
 var removePopup = function () {
   var popupCard = document.querySelector('.map__card');
   if (popupCard) {
-    popupCard.remove();
-  }
-};
-
-// Здесь намудрила
-// Как будет в этом случае сопоставить айдишник c объявлением?
-// И в else возвращать null?
-
-// Ищем айдишник Пина
-var findById = function (id) {
-  for (var i = 0; i < OfferAd.length; i++) {
-    if (OfferAd[i].id === button.data.id) {
-      return OfferAd[i];
-    }
+    map.removeChild(popupCard);
   }
 };
 
@@ -125,9 +120,10 @@ var addPopupToMap = function (advert) {
 
 // Создаем поп-ап
 var createPopup = function () {
-  var infoPin = findById(button.dataset.id);
+  var infoPin = findById();
   var popupOffer = renderOffer(infoPin);
   addPopupToMap(popupOffer);
+  return popupOffer;
 };
 
 // Создаем элемент пина
@@ -197,19 +193,23 @@ var renderOffer = function (data) {
 };
 
 var mapElem = document.querySelector('.map__pins');
-var OfferAd = getOffer(AMOUNT);
-// renderMap(mapElem, OfferAd);
-// var offer = renderOffer(OfferAd);
+var offerAd = getOffer(AMOUNT);
+// renderMap(mapElem, offerAd);
+// var offer = renderOffer(offerAd);
 // map.appendChild(offer);
 
 var noticeForm = document.querySelector('.notice__form');
 var noticeFormFieldset = noticeForm.querySelectorAll('fieldset');
 var mapPinMain = document.querySelector('.map__pin--main');
 var address = document.querySelector('#address');
+var map = document.querySelector('.map');
+var button = document.createElement('button');
+// var mapFilterContainer = document.querySelector('.map__filters-container');
+// var pin = document.querySelector('.map__pin');
 // var ESC = 27;
 
 
-var getMapActive = function () {
+var doMapActive = function () {
   noticeForm.classList.remove('notice__form--disabled');
   map.classList.remove('map--faded');
   for (var i = 0; i < noticeFormFieldset.length; i++) {
@@ -217,7 +217,7 @@ var getMapActive = function () {
   }
 };
 
-var getMapBlocked = function () {
+var doMapBlocked = function () {
   noticeForm.classList.add('notice__form--disabled');
   map.classList.add('map--faded');
   for (var i = 0; i < noticeFormFieldset.length; i++) {
@@ -227,15 +227,15 @@ var getMapBlocked = function () {
 
 var getAddress = function (event) {
   var mainPinCoordinates = event.clientX + ', ' + event.clientY;
-  address.setAttribute('value', mainPinCoordinates);
+  address.value = mainPinCoordinates;
 };
 
 var onAddMapPins = function (event) {
-  getMapActive();
+  doMapActive();
   getAddress(event);
-  renderMap(mapElem, OfferAd);
+  renderMap(mapElem, offerAd);
   mapPinMain.removeEventListener('mouseup', onAddMapPins);
 };
 
-getMapBlocked();
+doMapBlocked();
 mapPinMain.addEventListener('mouseup', onAddMapPins);

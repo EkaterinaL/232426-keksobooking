@@ -96,9 +96,9 @@ var getOffer = function () {
 };
 
 // Ищем айдишник Пина
-var findById = function () {
+var findById = function (id) {
   for (var i = 0; i < offerAd.length; i++) {
-    if (offerAd[i].id === button.dataset.id) {
+    if (offerAd[i].id === id) {
       return offerAd[i];
     }
   }
@@ -113,17 +113,17 @@ var removePopup = function () {
   }
 };
 
-// Добавляем  попап на карту
-var addPopupToMap = function (advert) {
-  map.appendChild(advert);
-};
-
 // Создаем поп-ап
-var createPopup = function () {
-  var infoPin = findById();
+var createPopup = function (id) {
+  var infoPin = findById(id);
   var popupOffer = renderOffer(infoPin);
   addPopupToMap(popupOffer);
   return popupOffer;
+};
+
+// Добавляем  попап на карту
+var addPopupToMap = function (advert) {
+  map.appendChild(advert);
 };
 
 // Создаем элемент пина
@@ -143,7 +143,7 @@ var createPin = function (data) {
 
   button.addEventListener('click', function () {
     removePopup();
-    createPopup();
+    createPopup(button.dataset.id);
     map.querySelector('.popup__close').addEventListener('click', function () {
       removePopup();
     });
@@ -171,7 +171,7 @@ var getFeatures = function (features) {
   for (var i = 0; i < features.length; i++) {
     var featuresElement = document.createElement('li');
     featuresElement.className = 'feature feature--' + features[i];
-    fragment.appendChild(features);
+    fragment.appendChild(featuresElement);
   }
   return fragment;
 };
@@ -203,7 +203,7 @@ var noticeFormFieldset = noticeForm.querySelectorAll('fieldset');
 var mapPinMain = document.querySelector('.map__pin--main');
 var address = document.querySelector('#address');
 var map = document.querySelector('.map');
-var button = document.createElement('button');
+
 // var mapFilterContainer = document.querySelector('.map__filters-container');
 // var pin = document.querySelector('.map__pin');
 // var ESC = 27;

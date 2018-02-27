@@ -66,6 +66,7 @@ var getOffer = function () {
     var locationX = getRandom(LOCATION_X_MIN, LOCATION_X_MAX);
     var locationY = getRandom(LOCATION_Y_MIN, LOCATION_Y_MAX);
     var advert = {
+      'id': i,
       'author': {
         'avatar': 'img/avatars/user0' + i + '.png'
       },
@@ -94,9 +95,43 @@ var getOffer = function () {
   return array;
 };
 
-// Активируем карту
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
+// Ищем айдишник Пина
+var findById = function (id) {
+  for (var i = 0; i < offerAd.length; i++) {
+    if (offerAd[i].id === parseInt(id, 10)) {
+      return offerAd[i];
+    }
+  }
+  return null;
+};
+
+// Убираем поп-ап
+var removePopup = function () {
+  var popupCard = document.querySelector('.map__card');
+  if (popupCard) {
+    map.removeChild(popupCard);
+  }
+};
+
+// Убираем поп-ап с помощью ESCAPE
+var keydownEscHandler = function (evt) {
+  if (evt.keyCode === ESC) {
+    removePopup();
+  }
+};
+
+// Создаем поп-ап
+var createPopup = function (id) {
+  var infoPin = findById(id);
+  var popupOffer = renderOffer(infoPin);
+  addPopupToMap(popupOffer);
+  return popupOffer;
+};
+
+// Добавляем  попап на карту
+var addPopupToMap = function (advert) {
+  map.appendChild(advert);
+};
 
 // Создаем элемент пина
 var createPin = function (data) {
@@ -105,12 +140,22 @@ var createPin = function (data) {
   button.style.left = data.location.x + 'px';
   button.style.top = data.location.y + 'px';
   button.draggable = false;
+  button.dataset.id = data.id;
   var imgButton = document.createElement('img');
   imgButton.src = '';
   imgButton.style.width = '40' + 'px';
   imgButton.style.height = '40' + 'px';
   imgButton.src = data.author.avatar;
   button.appendChild(imgButton);
+
+  button.addEventListener('click', function () {
+    removePopup();
+    createPopup(button.dataset.id);
+    map.querySelector('.popup__close').addEventListener('click', function () {
+      removePopup();
+    });
+    document.addEventListener('keydown', keydownEscHandler);
+  });
   return button;
 };
 
@@ -134,7 +179,7 @@ var getFeatures = function (features) {
   for (var i = 0; i < features.length; i++) {
     var featuresElement = document.createElement('li');
     featuresElement.className = 'feature feature--' + features[i];
-    fragment.appendChild(features);
+    fragment.appendChild(featuresElement);
   }
   return fragment;
 };
@@ -151,11 +196,51 @@ var renderOffer = function (data) {
   cardElem.querySelector('.popup__features').textContent = '';
   cardElem.querySelector('.popup__features').appendChild(getFeatures(data.offer.features));
   cardElem.querySelector('.popup__features + p').textContent = data.offer.description;
+
   return cardElem;
 };
 
 var mapElem = document.querySelector('.map__pins');
-var OfferAd = getOffer(AMOUNT);
-renderMap(mapElem, OfferAd);
-var offer = renderOffer(OfferAd);
-map.appendChild(offer);
+var offerAd = getOffer(AMOUNT);
+// renderMap(mapElem, offerAd);
+// var offer = renderOffer(offerAd);
+// map.appendChild(offer);
+
+var noticeForm = document.querySelector('.notice__form');
+var noticeFormFieldset = noticeForm.querySelectorAll('fieldset');
+var mapPinMain = document.querySelector('.map__pin--main');
+var address = document.querySelector('#address');
+var map = document.querySelector('.map');
+var ESC = 27;
+
+
+var doMapActive = function () {
+  noticeForm.classList.remove('notice__form--disabled');
+  map.classList.remove('map--faded');
+  for (var i = 0; i < noticeFormFieldset.length; i++) {
+    noticeFormFieldset[i].disabled = false;
+  }
+};
+
+var doMapBlocked = function () {
+  noticeForm.classList.add('notice__form--disabled');
+  map.classList.add('map--faded');
+  for (var i = 0; i < noticeFormFieldset.length; i++) {
+    noticeFormFieldset[i].disabled = true;
+  }
+};
+
+var getAddress = function (event) {
+  var mainPinCoordinates = event.clientX + ', ' + event.clientY;
+  address.value = mainPinCoordinates;
+};
+
+var onAddMapPins = function (event) {
+  doMapActive();
+  getAddress(event);
+  renderMap(mapElem, offerAd);
+  mapPinMain.removeEventListener('mouseup', onAddMapPins);
+};
+
+doMapBlocked();
+mapPinMain.addEventListener('mouseup', onAddMapPins);

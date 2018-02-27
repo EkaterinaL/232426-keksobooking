@@ -98,7 +98,7 @@ var getOffer = function () {
 // Ищем айдишник Пина
 var findById = function (id) {
   for (var i = 0; i < offerAd.length; i++) {
-    if (offerAd[i].id === id) {
+    if (offerAd[i].id === parseInt(id, 10)) {
       return offerAd[i];
     }
   }
@@ -110,6 +110,13 @@ var removePopup = function () {
   var popupCard = document.querySelector('.map__card');
   if (popupCard) {
     map.removeChild(popupCard);
+  }
+};
+
+// Убираем поп-ап с помощью ESCAPE
+var keydownEscHandler = function (evt) {
+  if (evt.keyCode === ESC) {
+    removePopup();
   }
 };
 
@@ -147,6 +154,7 @@ var createPin = function (data) {
     map.querySelector('.popup__close').addEventListener('click', function () {
       removePopup();
     });
+    document.addEventListener('keydown', keydownEscHandler);
   });
   return button;
 };
@@ -203,10 +211,7 @@ var noticeFormFieldset = noticeForm.querySelectorAll('fieldset');
 var mapPinMain = document.querySelector('.map__pin--main');
 var address = document.querySelector('#address');
 var map = document.querySelector('.map');
-
-// var mapFilterContainer = document.querySelector('.map__filters-container');
-// var pin = document.querySelector('.map__pin');
-// var ESC = 27;
+var ESC = 27;
 
 
 var doMapActive = function () {

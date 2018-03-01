@@ -296,7 +296,7 @@ var guestsNumberHandler = function (evt) {
     capacity.value = '1';
   }
   if (evt.target.value === '2') {
-    option[0].disabled = false;
+    option[0].disabled = true;
     option[1].disabled = false;
     option[2].disabled = false;
     option[3].disabled = true;

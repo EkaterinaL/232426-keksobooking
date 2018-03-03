@@ -36,7 +36,6 @@
   };
 
   window.pins = {
-    renderMap: renderMap,
-    // createPin: createPin
+    renderMap: renderMap
   };
 })();

@@ -10,12 +10,16 @@
   var capacity = noticeForm.querySelector('#capacity');
   var title = noticeForm.querySelector('#title');
   var option = capacity.querySelectorAll('option');
+  var address = document.querySelector('#address');
 
   var housePrice = {
     'bungalo': 0,
     'flat': 1000,
     'house': 5000,
     'palace': 10000
+  };
+  var getAddress = function (x, y) {
+    address.value = 'x: ' + x + ', y: ' + y;
   };
 
   var checkTitle = function () {
@@ -94,4 +98,8 @@
     checkTitle();
     checkPrice();
   });
+
+  window.form = {
+    getAddress: getAddress
+  };
 })();
